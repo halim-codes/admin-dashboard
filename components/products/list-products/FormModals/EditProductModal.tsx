@@ -29,7 +29,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     stock_quantity: 0,
     is_active: false,
     is_featured: false,
-    // تم حذف file: null as File | null,
   });
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
         stock_quantity: product.stock_quantity || 0,
         is_active: product.is_active || false,
         is_featured: product.is_featured || false,
-        // تم حذف file: null,
       });
     }
   }, [product]);
@@ -54,13 +52,11 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     }));
   };
 
-  // تم حذف handleFileChange
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your API call to update the product here (using the 'form' state)
     console.log("Submitting product data (Image field removed):", form); 
-    onSuccess(); // Notify parent after successful update
+    onSuccess(); 
     onClose();
   };
 

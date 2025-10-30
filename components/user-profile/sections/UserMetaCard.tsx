@@ -6,7 +6,7 @@ import { PencilIcon } from "@/icons";
 
 type Props = {
   user: {
-    name: string;
+    username: string;
   };
   onEdit: () => void;
 };
@@ -26,7 +26,7 @@ const UserMetaCard = ({ user, onEdit }: Props) => {
           </div>
           <div className="order-3 xl:order-2">
             <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-              {user.name}
+              {user.username}
             </h4>
           </div>
         </div>

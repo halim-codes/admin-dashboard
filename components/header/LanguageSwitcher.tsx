@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useLocale } from "@/context/LocaleContext";
-
-const languages = [
-  { code: "en", label: "English" },
-  { code: "ar", label: "العربية" },
-];
+import { useLanguages } from "@/hooks/useLanguages";
 
 export default function LanguageDropdown() {
   const { locale, setLocale } = useLocale();
+  const { languages: languagesData, isLoading } = useLanguages();
   const [isOpen, setIsOpen] = useState(false);
 
+  const languages = Array.isArray(languagesData) ? languagesData : [];
+  
   useEffect(() => {
     function handleClickOutside() {
       setIsOpen(false);
@@ -34,7 +33,7 @@ export default function LanguageDropdown() {
   }
 
   const currentLangLabel =
-    languages.find((lang) => lang.code === locale)?.label || locale;
+    languages.find((lang) => lang.key === locale)?.name || locale;
 
   return (
     <div className="relative inline-block text-left">
@@ -45,7 +44,7 @@ export default function LanguageDropdown() {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <span>{currentLangLabel}</span>
+        <span>{isLoading ? "Loading..." : currentLangLabel}</span>
         <svg
           className={`ml-2 h-5 w-5 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -66,23 +65,25 @@ export default function LanguageDropdown() {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-32 rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800 z-50">
           <ul className="py-1">
-            {languages.map(({ code, label }) => (
-              <li key={code}>
-                <button
-                  onClick={() => selectLanguage(code)}
-                  className={`block w-full px-4 py-2 text-left text-sm ${
-                    locale === code
-                      ? "bg-gray-200 dark:bg-gray-700 font-semibold"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }
-                  dark:text-white
-                  `}
-                  type="button"
-                >
-                  {label}
-                </button>
-              </li>
-            ))}
+            {isLoading ? (
+              <li className="px-4 py-2 text-sm dark:text-white">Loading...</li>
+            ) : (
+              languages.map(({ key, name }) => (
+                <li key={key}>
+                  <button
+                    onClick={() => selectLanguage(key!)}
+                    className={`block w-full px-4 py-2 text-left text-sm ${
+                      locale === key
+                        ? "bg-gray-200 dark:bg-gray-700 font-semibold"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                    } dark:text-white`}
+                    type="button"
+                  >
+                    {name}
+                  </button>
+                </li>
+              ))
+            )}
           </ul>
         </div>
       )}

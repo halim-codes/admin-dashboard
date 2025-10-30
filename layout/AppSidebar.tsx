@@ -5,12 +5,11 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  ChevronDownIcon, 
-  HorizontaLDots,
+  ChevronDownIcon,
   UserCircleIcon,
-  UserIcon, 
-  CategoriesIcon, 
-  ProductsIcon, 
+  UserIcon,
+  CategoriesIcon,
+  ProductsIcon,
   DashboardIcon,
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
@@ -139,7 +138,9 @@ const AppSidebar: React.FC = () => {
             )}
             {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
               <div
-                ref={(el) => (subMenuRefs.current[`${type}-${i}`] = el)}
+                ref={(el) => {
+                  subMenuRefs.current[`${type}-${i}`] = el;
+                }}
                 className="overflow-hidden transition-all duration-300"
                 style={{
                   height:

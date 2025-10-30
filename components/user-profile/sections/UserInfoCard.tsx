@@ -1,22 +1,23 @@
 "use client";
 
-import React from "react";
 import { PencilIcon } from "@/icons";
 
 type Props = {
   user: {
-    name: string;
+    username: string;
     email: string;
-    phone?: string;
+    role?: { id: number; name: string };
+    language?: { id: number; key: string; name: string };
   };
-  onEdit: () => void;
+    onEdit: () => void;
 };
 
 const UserInfoCard = ({ user, onEdit }: Props) => {
   const infoFields = [
-    { label: "Name", value: user.name },
+    { label: "Username", value: user.username },
     { label: "Email", value: user.email },
-    { label: "Phone", value: user.phone || "-" },
+    { label: "Role", value: user.role?.name || "-" },
+    { label: "Language", value: user.language?.name || "-" },
   ];
 
   return (
@@ -26,7 +27,7 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
             Personal Info
           </h4>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
             {infoFields.map(({ label, value }) => (
               <div key={label}>
                 <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">{label}</p>
@@ -46,6 +47,6 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
       </div>
     </div>
   );
-}
+};
 
 export default UserInfoCard;

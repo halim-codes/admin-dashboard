@@ -1,26 +1,17 @@
-import { Outfit } from 'next/font/google';
-import './globals.css';
+import { ReactNode } from "react";
+import { Outfit } from "next/font/google";
+import "./globals.css";
+import ClientProviders from "./ClientProviders";
 
-import { SidebarProvider } from '@/context/SidebarContext';
-import { ThemeProvider } from '@/context/ThemeContext';
+const outfit = Outfit({ subsets: ["latin"] });
 
-const outfit = Outfit({
-  subsets: ["latin"],
-});
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html>
-      <body className={`${outfit.className} dark:bg-gray-900`}>
-        <ThemeProvider>
-          <SidebarProvider>
-            {children}
-          </SidebarProvider>
-        </ThemeProvider>
+    <html lang="en">
+      <body className={outfit.className}>
+        <ClientProviders>
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );

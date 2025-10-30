@@ -19,6 +19,13 @@ export default function UserDropdown() {
     e.stopPropagation();
     setIsOpen((prev) => !prev);
   }
+  const handleSignOut = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("token_exp");
+
+    router.replace("/signin");
+  };
 
   function closeDropdown() {
     setIsOpen(false);
@@ -134,6 +141,7 @@ export default function UserDropdown() {
           </li>
         </ul>
         <button
+          onClick={handleSignOut}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
           <svg

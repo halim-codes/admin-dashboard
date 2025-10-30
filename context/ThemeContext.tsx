@@ -26,7 +26,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
-  // Apply theme class to <html> and persist in localStorage
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
