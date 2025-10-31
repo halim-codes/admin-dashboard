@@ -11,6 +11,7 @@ import {
   CategoriesIcon,
   ProductsIcon,
   DashboardIcon,
+  LockIcon
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
 
@@ -47,6 +48,14 @@ const getNavItems = (messages: Record<string, string>): NavItem[] => [
 ];
 
 const getOtherItems = (messages: Record<string, string>): NavItem[] => [
+  {
+    icon: <LockIcon />,
+    name: messages["nav_roles_permissions"] || "Roles && Permissions",
+    subItems: [
+      { name: messages["nav_permissions"] || "Permissions", path: "/permissions" },
+      { name: messages["nav_roles"] || "Roles", path: "/roles" },
+    ],
+  },
   {
     icon: <UserIcon />,
     name: messages["nav_users"] || "Users",
