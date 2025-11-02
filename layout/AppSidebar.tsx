@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,6 +15,10 @@ import {
   LockIcon
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
+
+type SubItem = Exclude<NavItem["subItems"], undefined>[number]; // Utility type for a single sub-item
 
 type NavItem = {
   name: string;
@@ -22,51 +27,92 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
+const getNavItems = (
+  messages: Record<string, string>,
+  canViewProducts: boolean,
+  canAddProduct: boolean,
+  canViewCategories: boolean,
+  canAddCategory: boolean
+): NavItem[] => {
+  const navItems: NavItem[] = [
+    {
+      icon: <DashboardIcon />,
+      name: messages["nav_dashboard"] || "Dashboard",
+      path: "/",
+    },
+  ];
 
-const getNavItems = (messages: Record<string, string>): NavItem[] => [
-  {
-    icon: <DashboardIcon />,
-    name: messages["nav_dashboard"] || "Dashboard",
-    path: "/",
-  },
-  {
-    icon: <CategoriesIcon />,
-    name: messages["nav_products_categories"] || "Products Categories",
-    subItems: [
-      { name: messages["nav_original_product"] || "Products", path: "/categories/list-categories" },
-      { name: messages["nav_product_categories"] || "Product Categories", path: "/categories/add-category" },
-    ],
-  },
-  {
-    icon: <ProductsIcon />,
-    name: messages["nav_products"] || "Products",
-    subItems: [
-      { name: messages["nav_product_list"] || "List Product", path: "/products/list-products" },
-      { name: messages["nav_add_product"] || "Add Product", path: "/products/add-product" },
-    ],
-  },
-];
+  // 1. Products Categories
+  if (canViewCategories || canAddCategory) {
+    // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
+    const categorySubItems: SubItem[] = [
+      canViewCategories && { name: messages["nav_original_product"] || "Products", path: "/categories/list-categories" },
+      canAddCategory && { name: messages["nav_product_categories"] || "Product Categories", path: "/categories/add-category" },
+    ].filter(Boolean) as SubItem[];
 
-const getOtherItems = (messages: Record<string, string>): NavItem[] => [
-  {
-    icon: <LockIcon />,
-    name: messages["nav_roles_permissions"] || "Roles && Permissions",
-    subItems: [
-      { name: messages["nav_permissions"] || "Permissions", path: "/permissions" },
-      { name: messages["nav_roles"] || "Roles", path: "/roles" },
-    ],
-  },
-  {
-    icon: <UserIcon />,
-    name: messages["nav_users"] || "Users",
-    path: "/users",
-  },
-  {
+    if (categorySubItems.length > 0) {
+      navItems.push({
+        icon: <CategoriesIcon />,
+        name: messages["nav_products_categories"] || "Products Categories",
+        subItems: categorySubItems,
+      });
+    }
+  }
+
+  // 2. Products
+  if (canViewProducts || canAddProduct) {
+    // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
+    const productSubItems: SubItem[] = [
+      canViewProducts && { name: messages["nav_product_list"] || "List Product", path: "/products/list-products" },
+      canAddProduct && { name: messages["nav_add_product"] || "Add Product", path: "/products/add-product" },
+    ].filter(Boolean) as SubItem[];
+
+    if (productSubItems.length > 0) {
+      navItems.push({
+        icon: <ProductsIcon />,
+        name: messages["nav_products"] || "Products",
+        subItems: productSubItems,
+      });
+    }
+  }
+
+  return navItems;
+};
+
+const getOtherItems = (
+  messages: Record<string, string>,
+  canViewUsers: boolean,
+  canViewRoles: boolean
+): NavItem[] => {
+  const items: NavItem[] = [];
+  
+  if (canViewRoles) {
+    items.push({
+      icon: <LockIcon />,
+      name: messages["nav_roles_permissions"] || "Roles && Permissions",
+      subItems: [
+        { name: messages["nav_permissions"] || "Permissions", path: "/permissions" },
+        { name: messages["nav_roles"] || "Roles", path: "/roles" },
+      ],
+    });
+  }
+
+  if (canViewUsers) {
+    items.push({
+      icon: <UserIcon />,
+      name: messages["nav_users"] || "Users",
+      path: "/users",
+    });
+  }
+  
+  items.push({
     icon: <UserCircleIcon />,
     name: messages["nav_profile"] || "User Profile",
     path: "/profile",
-  },
-];
+  });
+
+  return items;
+};
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -74,8 +120,28 @@ const AppSidebar: React.FC = () => {
   const { locale, messages } = useLocale();
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const navItems = useMemo(() => getNavItems(messages as Record<string, string>), [messages]);
-  const othersItems = useMemo(() => getOtherItems(messages as Record<string, string>), [messages]);
+  const canViewUsers = useHasPermission(PERMISSIONS.VIEW_USERS);
+  const canViewProducts = useHasPermission(PERMISSIONS.VIEW_PRODUCTS);
+  const canAddProduct = useHasPermission(PERMISSIONS.ADD_PRODUCT);
+  const canViewCategories = useHasPermission(PERMISSIONS.VIEW_CATEGORIES);
+  const canAddCategory = useHasPermission(PERMISSIONS.ADD_CATEGORY);
+  const canViewRoles = useHasPermission(PERMISSIONS.VIEW_ROLES);
+
+  const navItems = useMemo(
+    () => getNavItems(
+      messages as Record<string, string>, 
+      canViewProducts, 
+      canAddProduct,
+      canViewCategories,
+      canAddCategory
+    ),
+    [messages, canViewProducts, canAddProduct, canViewCategories, canAddCategory]
+  );
+  
+  const othersItems = useMemo(
+    () => getOtherItems(messages as Record<string, string>, canViewUsers, canViewRoles),
+    [messages, canViewUsers, canViewRoles]
+  );
 
   const [openSubmenu, setOpenSubmenu] = useState<{ type: "main" | "others"; index: number } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});

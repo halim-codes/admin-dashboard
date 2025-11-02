@@ -24,6 +24,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     email: "",
     roleId: undefined as number | undefined,
     languageId: undefined as number | undefined,
+    status: "active" as "active" | "inactive",
   });
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
         email: user.email || "",
         roleId: user.role?.id || user.roleId,
         languageId: user.language?.id || user.languageId,
+        status: user.status === "active" || user.status === "inactive" ? user.status : "active",
       });
       setMessage(null);
     }
@@ -74,7 +76,13 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
       onClose();
       onSuccess();
 
-      setForm({ username: "", email: "", roleId: undefined, languageId: undefined });
+      setForm({
+        username: "",
+        email: "",
+        roleId: undefined,
+        languageId: undefined,
+        status: "active",
+      });
     } catch (err) {
       console.error(err);
       setMessage("Error saving user. Please try again.");
@@ -84,7 +92,11 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}   className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto"
+    >
       <form onSubmit={handleSubmit}>
         <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
           Edit User
@@ -131,7 +143,10 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
               <Select
                 value={form.roleId?.toString() || ""}
                 onChange={(value) => handleChange("roleId", value)}
-                options={roles.map(r => ({ value: String(r.id), label: r.name }))}
+                options={roles.map((r) => ({
+                  value: String(r.id),
+                  label: r.name,
+                }))}
                 placeholder={rolesLoading ? "Loading roles..." : "Select Role"}
                 disabled={rolesLoading}
                 required
@@ -143,9 +158,29 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
               <Select
                 value={form.languageId?.toString() || ""}
                 onChange={(value) => handleChange("languageId", value)}
-                options={languages.map(l => ({ value: String(l.id), label: l.name }))}
+                options={languages.map((l) => ({
+                  value: String(l.id),
+                  label: l.name,
+                }))}
                 placeholder={langsLoading ? "Loading languages..." : "Select Language"}
                 disabled={langsLoading}
+                required
+              />
+            </div>
+          </div>
+
+          {/*  Status */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Label>Status</Label>
+              <Select
+                value={form.status}
+                onChange={(value) => handleChange("status", value)}
+                options={[
+                  { value: "active", label: "Active" },
+                  { value: "inactive", label: "Inactive" },
+                ]}
+                placeholder="Select Status"
                 required
               />
             </div>

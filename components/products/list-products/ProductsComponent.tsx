@@ -7,6 +7,8 @@ import Button from "@/components/ui/button/Button";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import EditProductModal from "./FormModals/EditProductModal";
 import DeleteProductModal from "./FormModals/DeleteProductModal";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 const mockProducts = [
   {
@@ -43,9 +45,12 @@ const mockProducts = [
 
 const ProductsComponent: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
-
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const canAddProduct = useHasPermission(PERMISSIONS.ADD_PRODUCT);
+  const canEditProduct = useHasPermission(PERMISSIONS.EDIT_PRODUCT);
+  const canDeleteProduct = useHasPermission(PERMISSIONS.DELETE_PRODUCT);
 
   const openEditModal = (product: any) => {
     setSelectedProduct(product);
@@ -62,14 +67,15 @@ const ProductsComponent: React.FC = () => {
 
   return (
     <>
-      <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
-        Products List
-      </h3>
-
-      <div className="flex justify-end mb-4">
+      <div className="mb-5 flex items-center justify-between lg:mb-7">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Products List
+        </h3>
+        {canAddProduct && (
         <Link href="/products/add-product">
-          <Button size="sm">Add Product</Button>
+          <Button className="h-9 px-4 text-sm">Add Product</Button>
         </Link>
+        )}
       </div>
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -113,12 +119,16 @@ const ProductsComponent: React.FC = () => {
                     {/* Action buttons */}
                     <TableCell className="px-6 py-4 text-gray-800 dark:text-white">
                       <div className="flex items-center gap-5">
+                        {canEditProduct && (
                         <button onClick={() => openEditModal(product)}>
-                          <PencilIcon/>
+                          <PencilIcon />
                         </button>
+                        )}
+                        {canDeleteProduct && (
                         <button onClick={() => openDeleteModal(product)}>
                           <TrashBinIcon />
                         </button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -133,7 +143,7 @@ const ProductsComponent: React.FC = () => {
       <EditProductModal
         isOpen={editModalOpen}
         onClose={closeEditModal}
-        onSuccess={() => {}}
+        onSuccess={() => { }}
         product={selectedProduct}
       />
 
@@ -141,7 +151,7 @@ const ProductsComponent: React.FC = () => {
       <DeleteProductModal
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
-        onSuccess={() => {}}
+        onSuccess={() => { }}
         product={selectedProduct}
       />
     </>

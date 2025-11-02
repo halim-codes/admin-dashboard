@@ -27,6 +27,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     password: "",
     roleId: undefined as number | undefined,
     languageId: undefined as number | undefined,
+    status: "active" as "active" | "inactive",
   });
 
   const [message, setMessage] = useState<string | null>(null);
@@ -53,11 +54,11 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       password: form.password,
       roleId: form.roleId,
       languageId: form.languageId,
+      status: form.status,
     };
 
     try {
       await createUser.mutateAsync(payload);
-
       setMessage("User created successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -71,6 +72,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         password: "",
         roleId: undefined,
         languageId: undefined,
+        status: "active",
       });
     } catch (err) {
       console.error(err);
@@ -81,7 +83,11 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}   className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto"
+    >
       <form onSubmit={handleSubmit}>
         <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
           Add User
@@ -98,6 +104,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         )}
 
         <div className="space-y-4">
+          {/* Username + Email */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>Username</Label>
@@ -121,6 +128,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
+          {/* Password + Role */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>Password</Label>
@@ -138,27 +146,49 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               <Select
                 value={form.roleId?.toString() || ""}
                 onChange={(value) => handleChange("roleId", parseInt(value))}
-                options={roles.map((role) => ({ value: role.id.toString(), label: role.name }))}
+                options={roles.map((role) => ({
+                  value: role.id.toString(),
+                  label: role.name,
+                }))}
                 placeholder="Select Role"
                 required
               />
             </div>
           </div>
 
+          {/* Language + Status */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>Language</Label>
               <Select
                 value={form.languageId?.toString() || ""}
                 onChange={(value) => handleChange("languageId", parseInt(value))}
-                options={languages.map((lang) => ({ value: lang.id.toString(), label: lang.name }))}
+                options={languages.map((lang) => ({
+                  value: lang.id.toString(),
+                  label: lang.name,
+                }))}
                 placeholder="Select Language"
+                required
+              />
+            </div>
+
+            <div className="flex-1">
+              <Label>Status</Label>
+              <Select
+                value={form.status}
+                onChange={(value) => handleChange("status", value)}
+                options={[
+                  { value: "active", label: "Active" },
+                  { value: "inactive", label: "Inactive" },
+                ]}
+                placeholder="Select Status"
                 required
               />
             </div>
           </div>
         </div>
 
+        {/* Actions */}
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={loading}>
             Close

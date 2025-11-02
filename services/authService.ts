@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { LoginRequest, LoginResponse } from "@/types/Auth";
-import { User } from "@/types/User";
+import { AuthenticatedUser } from "@/types/User";
 
 export const authService = {
   login: async (req: LoginRequest): Promise<LoginResponse> => {
@@ -18,14 +18,14 @@ export const authService = {
     return response.data;
   },
 
-  fetchCurrentUser: async (): Promise<User | null> => {
+  fetchCurrentUser: async (): Promise<AuthenticatedUser | null> => {
     const token = localStorage.getItem("accessToken");
     if (!token) return null;
 
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     try {
-      const response = await axiosInstance.get<User>("/auth/me");
+      const response = await axiosInstance.get<AuthenticatedUser>("/auth/me");
       return response.data;
     } catch (error) {
       console.error("Error fetching current user:", error);

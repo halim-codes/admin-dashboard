@@ -48,7 +48,7 @@ const AddCategoryComponent: React.FC = () => {
 
   return (
     <>
-      <h3 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-8">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
         Add New Category
       </h3>
 
