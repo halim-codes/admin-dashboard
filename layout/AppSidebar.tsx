@@ -12,7 +12,8 @@ import {
   CategoriesIcon,
   ProductsIcon,
   DashboardIcon,
-  LockIcon
+  LockIcon,
+  LanguageIcon
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useHasPermission } from "@/hooks/useAuth";
@@ -82,10 +83,12 @@ const getNavItems = (
 const getOtherItems = (
   messages: Record<string, string>,
   canViewUsers: boolean,
-  canViewRoles: boolean
+  canViewRoles: boolean,
+  canViewLanguages: boolean,
+  canViewLanguageKeys: boolean
 ): NavItem[] => {
   const items: NavItem[] = [];
-  
+
   if (canViewRoles) {
     items.push({
       icon: <LockIcon />,
@@ -97,6 +100,21 @@ const getOtherItems = (
     });
   }
 
+  if (canViewLanguages || canViewLanguageKeys) {
+    const languageSubItems: SubItem[] = [
+      canViewLanguages && { name: messages["nav_languages_list"] || "Languages", path: "/languages/lang" },
+      canViewLanguageKeys && { name: messages["nav_languages_keys"] || "Language Keys", path: "/languages/keys" },
+    ].filter(Boolean) as SubItem[];
+
+    if (languageSubItems.length > 0) {
+      items.push({
+        icon: <LanguageIcon />,
+        name: messages["nav_languages"] || "Languages",
+        subItems: languageSubItems,
+      });
+    }
+  }
+
   if (canViewUsers) {
     items.push({
       icon: <UserIcon />,
@@ -104,7 +122,7 @@ const getOtherItems = (
       path: "/users",
     });
   }
-  
+
   items.push({
     icon: <UserCircleIcon />,
     name: messages["nav_profile"] || "User Profile",
@@ -126,21 +144,23 @@ const AppSidebar: React.FC = () => {
   const canViewCategories = useHasPermission(PERMISSIONS.VIEW_CATEGORIES);
   const canAddCategory = useHasPermission(PERMISSIONS.ADD_CATEGORY);
   const canViewRoles = useHasPermission(PERMISSIONS.VIEW_ROLES);
+  const canViewLanguages = useHasPermission(PERMISSIONS.VIEW_LANGUAGES);
+  const canViewLanguageKeys = useHasPermission(PERMISSIONS.VIEW_LANGUAGE_KEYS);
 
   const navItems = useMemo(
     () => getNavItems(
-      messages as Record<string, string>, 
-      canViewProducts, 
+      messages as Record<string, string>,
+      canViewProducts,
       canAddProduct,
       canViewCategories,
       canAddCategory
     ),
     [messages, canViewProducts, canAddProduct, canViewCategories, canAddCategory]
   );
-  
+
   const othersItems = useMemo(
-    () => getOtherItems(messages as Record<string, string>, canViewUsers, canViewRoles),
-    [messages, canViewUsers, canViewRoles]
+    () => getOtherItems(messages as Record<string, string>, canViewUsers, canViewRoles, canViewLanguages, canViewLanguageKeys),
+    [messages, canViewUsers, canViewRoles, canViewLanguages, canViewLanguageKeys]
   );
 
   const [openSubmenu, setOpenSubmenu] = useState<{ type: "main" | "others"; index: number } | null>(null);

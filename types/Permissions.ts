@@ -1,4 +1,13 @@
 export const PERMISSIONS = {
+  // Languages
+  VIEW_LANGUAGES: "view-languages",
+  ADD_LANGUAGE: "add-language",
+  EDIT_LANGUAGE: "edit-language",
+  DELETE_LANGUAGE: "delete-language",
+
+  VIEW_LANGUAGE_KEYS: "view-languages",
+  EDIT_LANGUAGE_KEYS: "edit-language-keys",
+
   // Users
   VIEW_USERS: "view-users",
   ADD_USER: "add-user",

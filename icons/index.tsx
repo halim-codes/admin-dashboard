@@ -78,6 +78,7 @@ import BellIconPath from "./bell.svg";
 import ProductsIconPath from "./products.svg";
 import CategoriesIconPath from "./categories.svg";
 import DashboardIconPath from "./dashboard.svg";
+import GlobeIconPath from "./globe.svg";
 
 
 export const PlusIcon = createIconComponent(PlusIconPath, "Plus");
@@ -136,3 +137,4 @@ export const BellIcon = createIconComponent(BellIconPath, "Bell");
 export const ProductsIcon = createIconComponent(ProductsIconPath, "Products");
 export const CategoriesIcon = createIconComponent(CategoriesIconPath, "Categories");
 export const DashboardIcon = createIconComponent(DashboardIconPath, "Dashboard");
+export const LanguageIcon = createIconComponent(GlobeIconPath, "Language");
